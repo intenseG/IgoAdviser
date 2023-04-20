@@ -13,7 +13,7 @@ class sgf_data():
         self.content = ""
         self.is_save = True
 
-    def import_file(self, file_path, kiryoku):
+    def import_file(self, file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
             print(file_path)
             self.content = f.read()
