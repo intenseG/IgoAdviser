@@ -104,7 +104,7 @@ class GameData:
 
         return GameData(bx, by, root.komi, root.ruleset, initial_stones, moves, player_black, player_white)
 
-    def to_query(self, id_: str, max_visits: Optional[int] = None) -> str:
+    def to_query(self, id_: str, max_visits: Optional[int] = None, ownership: Optional[bool] = None) -> str:
         assert 1 <= self.board_x_size <= 19 and 1 <= self.board_y_size <= 19
         assert abs(self.komi) <= 150
         assert self.komi * 10 % 5 == 0
@@ -123,6 +123,8 @@ class GameData:
         if max_visits is not None:
             assert max_visits >= 1
             query_dict["maxVisits"] = max_visits
+        if ownership is not None:
+            query_dict["includeMovesOwnership"] = ownership
 
         return json.dumps(query_dict)
 
@@ -244,6 +246,7 @@ if __name__ == "__main__":
     parser.add_argument("--komi", type=float, help="Override komi in sgfs if specified")
     parser.add_argument("--rules", choices=SUPPORTED_RULES, help="Override rules in sgfs if specified")
     parser.add_argument("--max_visits", type=int, help="Override maxVisits in config if specified")
+    parser.add_argument("--ownership", action="store_true")
     parser.add_argument("--result_csv", required=True, help="Analysis result CSV file (appended if already exists)")
     parser.add_argument("-v", "--verbose", action="store_true")
     args = vars(parser.parse_args())
@@ -271,7 +274,7 @@ if __name__ == "__main__":
     try:
         assert engine.proc.stdin is not None
         for sgf_name, game_data in game_data_dict.items():
-            query = game_data.to_query(sgf_name, args["max_visits"])
+            query = game_data.to_query(sgf_name, args["max_visits"], args["ownership"])
             print(query)
             engine.write_query(query)
         engine.proc.stdin.close()

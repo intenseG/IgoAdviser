@@ -15,7 +15,7 @@ class sgf_data():
 
     def import_file(self, file_path):
         with open(file_path, 'r', encoding='utf-8') as f:
-            print(file_path)
+            # print(file_path)
             self.content = f.read()
             lines = self.content.split("\n")
             for line in lines:
